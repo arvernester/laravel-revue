@@ -2,9 +2,10 @@
 
 namespace Yugo\Revue\Tests;
 
-use Yugo\Revue\Facades\Revue;
 use Yugo\Revue\ServiceProvider;
 use Orchestra\Testbench\TestCase;
+use Yugo\Revue\Facades\Revue as FacadesRevue;
+use Yugo\Revue\Revue;
 
 class RevueTest extends TestCase
 {
@@ -18,10 +19,5 @@ class RevueTest extends TestCase
         return [
             'revue' => Revue::class,
         ];
-    }
-
-    public function testExample()
-    {
-        $this->assertEquals(1, 1);
     }
 }
