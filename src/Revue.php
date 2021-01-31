@@ -21,7 +21,9 @@ class Revue
         $this->token = config('revue.token');
         $this->version = config('revue.version');
 
-        throw_if(empty($this->token), new Exception('Token for getrevue.io is not set.'));
+        if (!app()->runningUnitTests()) {
+            throw_if(empty($this->token), new Exception('Token for getrevue.io is not set.'));
+        }
     }
 
     private function validateEmail(string $email): void
@@ -90,20 +92,20 @@ class Revue
 
     public function me(): array
     {
-        return $this->request('accounts/me');
+        return ['data' => $this->request('accounts/me')];
     }
 
-    public function request(string $path, string $method = 'GET', array $payload = []): ?array
+    public function request(string $path, string $method = 'GET', array $payload = []): array
     {
-        $client = new Client([
-            'base_uri' => $this->server . '/' . $this->version . '/',
+        $this->http = new Service(new Client([
+            'base_uri' => $this->server.'/'.$this->version.'/',
             'headers' => [
                 'Authorization' => sprintf('Token %s', $this->token),
             ],
-        ]);
+        ]));
 
-        $response = $client->request($method, $path, $payload);
+        $response = $this->http->request($path, $method, $payload);
 
-        return json_decode((string) $response->getBody(), true);
+        return json_decode($response, true);
     }
 }
